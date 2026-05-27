@@ -1,0 +1,27 @@
+{
+  "name": "Tag-Security",
+  "target": "tag",
+  "source_type": "Repository",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "exclude": [],
+      "include": ["~ALL"]
+    }
+  },
+  "rules": [
+    {
+      "type": "non_fast_forward"
+    },
+    {
+      "type": "deletion"
+    },
+    {
+      "type": "required_signatures"
+    },
+    {
+      "type": "required_linear_history"
+    }
+  ],
+  "bypass_actors": []
+}
