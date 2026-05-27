@@ -1,0 +1,16 @@
+{
+  "name": "gh-ruleset-sync",
+  "version": "1.0.0",
+  "description": "GitHub Ruleset Sync - Batch configuration tool for GitHub rulesets",
+  "type": "module",
+  "license": "MIT",
+  "author": "sh1Nome",
+  "scripts": {
+    "build": "tsc",
+    "apply": "npm run build && node index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3"
+  }
+}
