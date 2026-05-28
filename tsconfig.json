@@ -6,7 +6,7 @@
     "moduleResolution": "nodenext",
     "types": ["node"],
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": "src"
   },
-  "include": ["scripts/**/*.ts"]
+  "include": ["src/**/*.ts"]
 }

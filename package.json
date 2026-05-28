@@ -7,8 +7,8 @@
   "author": "sh1Nome",
   "scripts": {
     "build": "tsc",
-    "ruleset-sync": "npm run build && node dist/scripts/ruleset-sync.js",
-    "list-repos": "npm run build && node dist/scripts/list-repos.js"
+    "ruleset-sync": "npm run build && node dist/ruleset-sync.js",
+    "list-repos": "npm run build && node dist/list-repos.js"
   },
   "devDependencies": {
     "@types/node": "^25.9.1",
