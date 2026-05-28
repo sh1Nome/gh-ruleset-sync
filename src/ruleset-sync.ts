@@ -18,6 +18,9 @@ interface RepoListItem {
 // Rulesets to apply to all repositories
 const RULESETS_TO_APPLY = ["Branch-Security", "Tag-Security"];
 
+// File containing repositories to exclude
+const EXCLUDE_REPOS = "exclude-repos.txt";
+
 /**
  * Execute a command and return its output
  */
@@ -68,6 +71,34 @@ function rulesetsEqual(a: Ruleset, b: Ruleset): boolean {
   const aStr = JSON.stringify(normalizeRuleset(a));
   const bStr = JSON.stringify(normalizeRuleset(b));
   return aStr === bStr;
+}
+
+/**
+ * Load excluded repositories from file
+ */
+function loadExcludedRepos(filename: string): Set<string> {
+  try {
+    const filepath = path.join(process.cwd(), filename);
+    const content = fs.readFileSync(filepath, "utf-8");
+    const repos = new Set<string>();
+
+    content.split("\n").forEach((line) => {
+      const trimmed = line.trim();
+      if (trimmed) {
+        repos.add(trimmed);
+      }
+    });
+
+    console.log(
+      `[INFO] Loaded ${repos.size} excluded repositories from ${filename}\n`,
+    );
+    return repos;
+  } catch (error) {
+    console.warn(
+      `[WARN] Failed to load excluded repositories from ${filename}: ${error instanceof Error ? error.message : String(error)}`,
+    );
+    return new Set<string>();
+  }
 }
 
 /**
@@ -240,8 +271,15 @@ function main(): void {
 
   try {
     const repos = getRepositories();
+    const excludedRepos = loadExcludedRepos(EXCLUDE_REPOS);
+    const filteredRepos = repos.filter(
+      (repo) => !excludedRepos.has(repo.nameWithOwner),
+    );
+
     const stats = {
       total: repos.length,
+      excluded: excludedRepos.size,
+      processed: filteredRepos.length,
       created: 0,
       updated: 0,
       deleted: 0,
@@ -251,7 +289,7 @@ function main(): void {
 
     console.log("[INFO] Processing repositories...\n");
 
-    for (const repo of repos) {
+    for (const repo of filteredRepos) {
       const result = processRepository(repo.nameWithOwner);
 
       let status = "[SKIP]";
@@ -276,6 +314,8 @@ function main(): void {
 
     console.log("\n[SUMMARY]");
     console.log(`Total repositories: ${stats.total}`);
+    console.log(`Excluded repositories: ${stats.excluded}`);
+    console.log(`Processed repositories: ${stats.processed}`);
     console.log(`Created: ${stats.created}`);
     console.log(`Updated: ${stats.updated}`);
     console.log(`Deleted: ${stats.deleted}`);
