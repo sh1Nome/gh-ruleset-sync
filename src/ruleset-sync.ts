@@ -44,10 +44,30 @@ function getRelevantFields(ruleset: Ruleset): Ruleset {
 }
 
 /**
+ * Normalize ruleset for consistent comparison
+ */
+function normalizeRuleset(ruleset: Ruleset): Ruleset {
+  return {
+    name: ruleset.name,
+    target: ruleset.target,
+    enforcement: ruleset.enforcement,
+    conditions: ruleset.conditions,
+    rules: [...ruleset.rules].sort((r1, r2) => {
+      const type1 = (r1 as any).type || "";
+      const type2 = (r2 as any).type || "";
+      return type1.localeCompare(type2);
+    }),
+    bypass_actors: ruleset.bypass_actors,
+  };
+}
+
+/**
  * Check if two rulesets have identical content
  */
 function rulesetsEqual(a: Ruleset, b: Ruleset): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
+  const aStr = JSON.stringify(normalizeRuleset(a));
+  const bStr = JSON.stringify(normalizeRuleset(b));
+  return aStr === bStr;
 }
 
 /**
