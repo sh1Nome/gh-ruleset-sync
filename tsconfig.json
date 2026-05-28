@@ -4,7 +4,9 @@
     "target": "esnext",
     "strict": true,
     "moduleResolution": "nodenext",
-    "types": ["node"]
+    "types": ["node"],
+    "outDir": "dist",
+    "rootDir": "."
   },
-  "include": ["*.ts"]
+  "include": ["scripts/**/*.ts"]
 }
