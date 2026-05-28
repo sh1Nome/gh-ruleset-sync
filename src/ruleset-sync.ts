@@ -11,11 +11,6 @@ interface Ruleset {
   bypass_actors: unknown[];
 }
 
-interface ApiRuleset extends Ruleset {
-  id: number;
-  [key: string]: unknown;
-}
-
 interface RepoListItem {
   nameWithOwner: string;
 }
@@ -37,7 +32,7 @@ function exec(command: string): string {
 /**
  * Extract only the relevant fields from API response for comparison
  */
-function getRelevantFields(ruleset: ApiRuleset): Ruleset {
+function getRelevantFields(ruleset: Ruleset): Ruleset {
   return {
     name: ruleset.name,
     target: ruleset.target,
@@ -88,7 +83,7 @@ function listRulesets(repoPath: string): Array<{ id: number; name: string }> {
 /**
  * Get detailed ruleset information
  */
-function getRuleset(repoPath: string, rulesetId: number): ApiRuleset {
+function getRuleset(repoPath: string, rulesetId: number): Ruleset {
   try {
     const output = exec(`gh api repos/${repoPath}/rulesets/${rulesetId}`);
     return JSON.parse(output);
@@ -171,7 +166,8 @@ function processRepository(repoPath: string): {
           // Fetch full details for comparison
           const existingRuleset = getRuleset(repoPath, existingRulesetMeta.id);
           const existingRelevant = getRelevantFields(existingRuleset);
-          if (rulesetsEqual(fileRuleset, existingRelevant)) {
+          const fileRelevant = getRelevantFields(fileRuleset);
+          if (rulesetsEqual(fileRelevant, existingRelevant)) {
             result.skipped++;
           } else {
             updateRuleset(repoPath, existingRulesetMeta.id, filename);
